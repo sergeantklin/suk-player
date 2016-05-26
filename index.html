@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+		<script src="suk_player.min.js"></script>
+		<script>
+			// фильтр, настроенный эквалайзером
+			var lastFilter = [0,0,0,0,0,0,0,0,0,0];
+			var url1 = 'music1.mp3';
+			var url2 = 'music2.mp3';
+		
+		
+			//------ Примеры функций -------//
+			
+			
+			
+			// сменить высоту тона
+			function toggleTone(e){
+				if(e.target.checked){
+					player.setTone(1.3);	
+				} else{
+					player.setTone(1);
+				}
+			}	
+			// отключить фильтр эквалайзера			
+			function detachFilter(e){
+				if(e.target.checked){
+					player.detachFilter();	
+				} else{
+					player.setFilter(lastFilter);
+				}
+			}		
+			// установить фильтр эквалайзера			
+			function toggleFilter(e){
+				if(e.target.checked){
+					lastFilter = [-16,-16,-8,-3,0,0,0,0,0,0];
+					
+				} else{
+					lastFilter = [0,0,0,0,0,0,0,0,0,0];
+				}
+				player.setFilter(lastFilter);	
+			}		
+			// сменить скорость воспроизведения
+			function toggleSpeed(e){
+				if(e.target.checked){
+					player.setSpeed(0.5);
+				} else{
+					player.setSpeed(1);
+				}
+			}		
+			// сменить громкость
+			function toggleVolume(e){
+				if(e.target.checked){
+					player.setVolume(0.1);
+				} else{
+					player.setVolume(1);
+				}
+			}
+			
+			
+			
+			//------ Слушатели событий -------//	
+			
+			
+			
+			function onAudioContextError(){
+				console.log('audio context error');
+			}			
+			function onGetUserMediaError(){
+				console.log('getUserMediaError error');
+			}			
+			function onLoadError(e){
+				console.log('file load error');
+			}			
+			function onLoadAbort(e){
+				console.log('file load abort');
+			}			
+			function onPlayerError(e){
+				console.log('player error');
+			}			
+			function onDecodeError(e){
+				console.log('decode error ', e);
+			}		
+			function onCanPlay(){
+				console.log('can play');
+				//player.setVolume(0);
+				//player.play(); 	
+			}	
+			function onDecode(){
+				console.log('decoded');
+				for(var a=document.getElementsByClassName('afterDecode'),i=0,ii=a.length;i<ii;i++){
+					a[i].style.display = "inline"
+				}
+			}
+			function onTimeUpdate(percent){
+				console.log('playing ', percent);
+			}			
+			function onEnd(){
+				console.log('end');
+				for(var a=document.getElementsByTagName('input'),i=0,ii=a.length;i<ii;i++){
+					a[i].checked = false;
+				}
+				
+			}			
+			function onPlay(){
+				console.log('play');
+			}
+			function onPause(){
+				console.log('pause');
+			}			
+			function onLoadProgress(percent){
+				console.log('loading ', percent);
+			}				
+			function onBuffer(){
+				console.log('buffering');
+			}				
+			function onBufferEnd(){
+				console.log('buffering end, playing');
+			}				
+			function onPreload(url){
+				console.log('preload end '+url);
+			}				
+			function onRecordLevel(value){
+				document.querySelector('#recordLevel').textContent=value;
+			}	
+
+			function upload(){
+				var blobs = player.getBlobs();
+				uploadFile('audio','original.ogg',blobs.original);
+				uploadFile('audio','voice.ogg',blobs.voice);
+				uploadFile('audio','music.ogg',blobs.music);
+				uploadFile('video','video.webm',blobs.video);
+				
+				function uploadFile(fileType,fileName,blob){
+					var formData = new FormData();
+					formData.append(fileType + '-filename', fileName);
+					formData.append(fileType + '-blob', blob);
+
+					xhr('save.php', formData, function (fName) {
+						console.log(fName);
+					});
+
+					function xhr(url, data, callback) {
+						var request = new XMLHttpRequest();
+						request.onreadystatechange = function () {
+							if (request.readyState == 4 && request.status == 200) {
+								callback(location.href + request.responseText);
+							}
+						};
+						request.open('POST', url);
+						request.send(data);
+					}
+				}
+				
+			}
+			function onGetDevices(devices){
+				console.log(devices)
+			}
+			function onStopRecord(devices){
+				console.log('record stopped')
+			}
+			var player = new SUK_Player({
+				onAudioContextError:onAudioContextError, // воспроизведение невозможно
+				onAudioContextError:onAudioContextError, // воспроизведение невозможно
+				onGetUserMediaError:onGetUserMediaError, // запись невозможна
+				onDecodeError:onDecodeError, // ошибка декодирования файла
+				onLoadError:onLoadError, // ошибка загрузки файла
+				onLoadAbort:onLoadAbort, // отмена загрузки файла
+				onCanPlay:onCanPlay,  // можно играть загруженный файл
+				onLoadProgress:onLoadProgress, // какая часть файла загружена
+				onDecode:onDecode, // файл декодирован
+				onTimeUpdate:onTimeUpdate, // сколько секунд прошло
+				onPlay:onPlay, // началось воспроизведение
+				onPause:onPause, // воспроизведение приостановлено
+				onEnd:onEnd, // воспроизведение окончилось
+				onPreload:onPreload, // предзагрузка файла завершена
+				onRecordLevel:onRecordLevel, // уровень записываемого голоса
+				onGetDevices:onGetDevices, // ответ на запрос подключенных устройств
+				onStopRecord:onStopRecord // запись окончена, можно воспроизводить
+			});
+			player.load(url2);
+		</script>
+		
+
+
+    </head>
+	<body>
+		<div style="width:50%; float:left">
+			<div>Плеер</div>
+			<button onclick="alert(player.version)">player version</button>
+			<hr>
+			<button onclick="player.preload([url1])">preload music1</button>&nbsp;
+			<button onclick="player.preload([url1,url2])">preload  music1+music2</button>
+			<hr>
+			<button onclick="player.load(url1)">load music1</button>
+			&nbsp;
+			<button onclick="player.load(url2)">load music2</button>
+			<hr>
+			<button onclick="player.play()">play</button>
+			&nbsp;
+			<button onclick="player.pause()">pause</button>
+			<hr>
+			<button onclick="player.setPosition(0)">rewind</button>
+			&nbsp;
+			<button onclick="alert(player.getDuration())">get duration</button>
+			<button onclick="player.getDevices()">get devices</button>
+			<hr>
+			<label><input type="checkbox" onclick="toggleSpeed(event)">set speed</label><br/>		
+			<label><input type="checkbox" onclick="toggleVolume(event)">set volume</label><br/>	
+			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleTone(event)">set tone</label><br/>
+			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleFilter(event)">set filter</label><br/>
+			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="detachFilter(event)">detach filter</label><br/>
+		</div>	
+		<div style="width:50%; float:right;">
+			<div>Запись</div>
+			<button onclick="player.startCapture({audio:true,video:true})">capture</button>	
+			<button onclick="player.stopCapture()">stop capture</button>	
+			<button onclick="player.startRecord()">record</button>	
+			<button onclick="player.replay(300,0)">replay</button>	
+			<button onclick="player.stopReplay()">stop Replay</button>	
+			<button onclick="upload()">upload</button>	
+			<button onclick="alert(player.getReplayDuration())">get Replay Duration</button>	
+			<hr>
+			reverb effect
+			<input type='text'  oninput="player.setReverbGain(parseFloat(event.target.value))" value="0.3">
+			filter
+			<input type='checkbox' onchange="player.setRecordFilter(this.checked?[-16,-16,-16,-16,-16,16,16,16,16,16]:[0,0,0,0,0,0,0,0,0,0])" >
+			<hr>
+			<button onclick="player.setMicOutput()">output none</button>
+			<button onclick="player.setMicOutput(true)">output destination</button>
+			<hr>
+			<button onclick="player.setMicLevel(10)">setMicLevel 10</button>
+			<button onclick="player.setMicLevel(1)">setMicLevel 1</button>
+			<button onclick="player.setMicLevel(0)">setMicLevel 0</button>
+			<div id='recordLevel'></div>
+			<br>
+			<video id="capturingVideo" autoplay></video>
+			<video id="capturedVideo" autoplay></video>
+			<audio id="capturedAudio"></audio>
+		</div>
+	</body>
+</html>
