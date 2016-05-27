@@ -48,7 +48,7 @@
 			recordingAudioNode = new RecordingAudioNode({
 				audioContext:audioContext,
 				BUFFER_SIZE:BUFFER_SIZE,
-				//supressRecord:true
+				supressRecord:true
 				
 			}),
 			bufferDuration;
@@ -102,8 +102,8 @@
 		filters[filters.length - 1].connect(recordingAudioNode);		
 		recordingAudioNode.connect(audioContext.destination);		
 	}
-		setInterval(function(){
-		console.log(pitchPlayer.getSourcePosition())
+	setInterval(function(){
+		//console.log(pitchPlayer.getSourcePosition())
 		
 	},100);
 	function onPlay(_position,duration){

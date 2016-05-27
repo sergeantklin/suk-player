@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+		<script src="SUK_Player.min.js"></script>
+		<script>
+			// фильтр, настроенный эквалайзером
+			var lastFilter = [0,0,0,0,0,0,0,0,0,0];
+			var url1 = 'music1.mp3';
+			var url2 = 'music2.mp3';
+		
+		
+			//------ Примеры функций -------//
+			
+			
+			
+			// сменить высоту тона
+			function toggleTone(e){
+				if(e.target.checked){
+					player.setTone(1.3);	
+				} else{
+					player.setTone(1);
+				}
+			}	
+			// отключить фильтр эквалайзера			
+			function detachFilter(e){
+				if(e.target.checked){
+					player.detachFilter();	
+				} else{
+					player.setFilter(lastFilter);
+				}
+			}		
+			// установить фильтр эквалайзера			
+			function toggleFilter(e){
+				if(e.target.checked){
+					lastFilter = [-16,-16,-8,-3,0,0,0,0,0,0];
+					
+				} else{
+					lastFilter = [0,0,0,0,0,0,0,0,0,0];
+				}
+				player.setFilter(lastFilter);	
+			}		
+			// сменить скорость воспроизведения
+			function toggleSpeed(e){
+				if(e.target.checked){
+					player.setSpeed(0.5);
+				} else{
+					player.setSpeed(1);
+				}
+			}		
+			// сменить громкость
+			function toggleVolume(e){
+				if(e.target.checked){
+					player.setVolume(0.5);
+				} else{
+					player.setVolume(1);
+				}
+			}
+			
+			
+			
+			//------ Слушатели событий -------//	
+			
+			
+			
+			function onAudioContextError(){
+				console.log('audio context error');
+			}			
+			function onLoadError(e){
+				console.log('file load error');
+			}			
+			function onLoadAbort(e){
+				console.log('file load abort');
+			}			
+			function onPlayerError(e){
+				console.log('player error');
+			}			
+			function onDecodeError(e){
+				console.log('decode error ', e);
+			}		
+			function onCanPlay(){
+				console.log('can play');
+			}	
+			function onDecode(){
+				console.log('decoded');
+				for(var a=document.getElementsByClassName('afterDecode'),i=0,ii=a.length;i<ii;i++){
+					a[i].style.display = "inline"
+				}
+			}
+			function onTimeUpdate(percent){
+				console.log('playing ', percent);
+			}			
+			function onEnd(){
+				console.log('end');
+				for(var a=document.getElementsByTagName('input'),i=0,ii=a.length;i<ii;i++){
+					a[i].checked = false;
+				}
+				
+			}			
+			function onPlay(){
+				console.log('play');
+			}
+			function onPause(){
+				console.log('pause');
+			}			
+			function onLoadProgress(percent){
+				console.log('loading ', percent);
+			}				
+			function onBuffer(){
+				console.log('buffering');
+			}				
+			function onBufferEnd(){
+				console.log('buffering end, playing');
+			}				
+			function onPreload(url){
+				console.log('preload end '+url);
+			}			
+			var player = new SUK_Player({
+				onAudioContextError:onAudioContextError,
+				onDecodeError:onDecodeError,
+				onLoadError:onLoadError,
+				onLoadAbort:onLoadAbort,
+				onCanPlay:onCanPlay,
+				onLoadProgress:onLoadProgress,
+				onDecode:onDecode,
+				onTimeUpdate:onTimeUpdate,
+				onPlay:onPlay,
+				onPause:onPause,
+				onEnd:onEnd,				
+				onBuffer:onBuffer,				
+				onBufferEnd:onBufferEnd,				
+				onPreload:onPreload,				
+			})
+		</script>
+		
+
+
+    </head>
+	<body>
+		<button onclick="alert(player.version)">player version</button>
+		<hr>
+		<button onclick="player.preload([url1])">preload music1</button>&nbsp;
+		<button onclick="player.preload([url1,url2])">preload  music1+music2</button>
+		<hr>
+		<button onclick="player.load(url1)">load music1</button>
+		&nbsp;
+		<button onclick="player.load(url2)">load music2</button>
+		<hr>
+		<button onclick="player.play()">play</button>
+		&nbsp;
+		<button onclick="player.pause()">pause</button>
+		<hr>
+		<button onclick="player.setPosition(0.5)">set 50% position</button>
+		&nbsp;
+		<button onclick="alert(player.getDuration())">get duration</button>
+		<hr>
+		<label><input type="checkbox" onclick="toggleSpeed(event)">set speed</label><br/>		
+		<label><input type="checkbox" onclick="toggleVolume(event)">set volume</label><br/>	
+		
+		<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleTone(event)">set tone</label><br/>
+		<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleFilter(event)">set filter</label><br/>
+		<label style="display:none" class="afterDecode"><input type="checkbox" onclick="detachFilter(event)">detach filter</label><br/>
+	</body>
+</html>
