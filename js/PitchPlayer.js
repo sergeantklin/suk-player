@@ -9,6 +9,9 @@
 		soundTouch,
 		simpleFilter,
 		lastPosition,
+		playingInterval,
+		ticksTotal,
+		currentTick,
 		soundTouchSource = {
 			extract: function (target, numFrames, position) {
 				var l = soundBuffer.getChannelData(0);
@@ -25,8 +28,42 @@
 			}
 		};
 
+	function stopPlayingInterval(){
+		clearInterval(playingInterval);
+	}
+	function startPlayingInterval(){
+		stopPlayingInterval();
+		var startDateTime = new Date().getTime();
+		playingInterval = setInterval(function(){
+			var correction = new Date().getTime() - startDateTime;
+			initParams.onPlay&&initParams.onPlay(lastPosition,soundBuffer.duration, correction);
+		},100);
+	}
 	
-	
+	function onAudioProcess (e){
+		// The input buffer is the song we loaded earlier
+		var inputBuffer = e.inputBuffer;
+
+		// The output buffer contains the samples that will be modified and played
+		var outputBuffer = e.outputBuffer;
+
+		for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+			var inputData = inputBuffer.getChannelData(channel);
+			var outputData = outputBuffer.getChannelData(channel);
+
+			// Loop through the 4096 samples
+			for (var sample = 0; sample < inputBuffer.length; sample++) {
+				// make output equal to the same as the input
+				outputData[sample] = inputData[sample];
+				// add noise to each output sample
+				//outputData[sample] += ((Math.random() * 2) - 1) * 0.01; 				
+			}
+		}
+		currentTick++;
+		var position = (currentTick/ticksTotal);
+		//console.log(position)
+		initParams.onPlay&&initParams.onPlay(position,soundBuffer.duration);
+	}
 	function onPitchAudioProcess (e){
 		//if (soundBuffer.getChannelData){
 			//pos+=BUFFER_SIZE / audioContext.sampleRate;
@@ -41,9 +78,10 @@
 			}
 			var position = simpleFilter.sourcePosition / (soundBuffer.duration * initParams.audioContext.sampleRate);
 			if (lastPosition!=position){
+				lastPosition = position;
 				initParams.onPlay&&initParams.onPlay(position,soundBuffer.duration);
+				startPlayingInterval();
 			}
-			lastPosition = position;
 			//leftchannel.push (new Float32Array (l));
 			//rightchannel.push (new Float32Array (r));
 			//blob = new Blob([e.data], {
@@ -64,16 +102,28 @@
 			audioNode.disconnect();
 		}
 		audioNode = initParams.audioContext.createScriptProcessor ? initParams.audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2) : initParams.audioContext.createJavaScriptNode(BUFFER_SIZE, 2, 2);
-		audioNode.onaudioprocess = onPitchAudioProcess;
 		soundBuffer = options.soundBuffer;
-		var currentPosition = options.position * (options.soundBuffer.duration * initParams.audioContext.sampleRate);
-		currentPosition = Math.round(options.soundBuffer.length*options.position);
-		blob = null;
-		soundTouch = new SoundTouch();
-		soundTouch.pitch = options.pitch;
-		soundTouch.tempo = options.tempo;
-		simpleFilter = new SimpleFilter(soundTouchSource, soundTouch);
-		simpleFilter.sourcePosition = currentPosition;	
+		if(options.pitch!=1){
+			audioNode.onaudioprocess = onPitchAudioProcess;
+			var currentPosition = options.position * (options.soundBuffer.duration * initParams.audioContext.sampleRate);
+			currentPosition = Math.round(options.soundBuffer.length*options.position);
+			blob = null;
+			soundTouch = new SoundTouch();
+			soundTouch.pitch = options.pitch;
+			soundTouch.tempo = options.tempo;
+			simpleFilter = new SimpleFilter(soundTouchSource, soundTouch);
+			simpleFilter.sourcePosition = currentPosition;	
+		} else{
+			var source = initParams.audioContext.createBufferSource();
+			source.buffer = soundBuffer;
+			ticksTotal = Math.floor(soundBuffer.length/BUFFER_SIZE);
+			currentTick = Math.floor(ticksTotal*options.position);
+			audioNode.onaudioprocess = onAudioProcess;
+			audioNode.loop  = true;
+			source.connect(audioNode);
+			console.log(options.position)
+			source.start(0,options.position*soundBuffer.duration);
+		}
 		return audioNode;
 	}
 	 function getSourcePosition(){
@@ -81,7 +131,8 @@
 	 }
 	return {
 		attachSoundTouch:attachSoundTouch,
-		getSourcePosition:getSourcePosition
+		getSourcePosition:getSourcePosition,
+		pause:stopPlayingInterval
 	};
 
 };

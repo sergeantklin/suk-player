@@ -2,7 +2,7 @@
 	var initParams = _initParams||{},
 		mediaElements = new MediaElements(),
 		audioContext = mediaElements.getAudioContextClass(),
-		BUFFER_SIZE = 4096;
+		BUFFER_SIZE = 1024;
 		
 	if(!audioContext){
 		var htmlPlayer = new Audio();
@@ -48,7 +48,7 @@
 			recordingAudioNode = new RecordingAudioNode({
 				audioContext:audioContext,
 				BUFFER_SIZE:BUFFER_SIZE,
-				supressRecord:true
+				supressRecord:false
 				
 			}),
 			bufferDuration;
@@ -102,11 +102,8 @@
 		filters[filters.length - 1].connect(recordingAudioNode);		
 		recordingAudioNode.connect(audioContext.destination);		
 	}
-	setInterval(function(){
-		//console.log(pitchPlayer.getSourcePosition())
-		
-	},100);
-	function onPlay(_position,duration){
+	function onPlay(_position,duration, correction){
+		correction = correction||0;
 		if(!_position) return;
 		position = _position;
 		if(Math.round(_position*1000)==1000){
@@ -114,7 +111,7 @@
 			stopReplay(true);
 			initParams.onEnd&&initParams.onEnd();
 		}else{
-			initParams.onTimeUpdate&&initParams.onTimeUpdate(_position*duration);
+			initParams.onTimeUpdate&&initParams.onTimeUpdate(_position*duration+(correction)/1000);
 		}
 	}
 	function play(supress) {
@@ -139,7 +136,8 @@
 			htmlPlayer.pause();
 			return;
 		}
-		//clearInterval(playing);
+		pitchPlayer.pause();
+		recPitchPlayer&&recPitchPlayer.pause();
 		playing = null;
 		audioNode&&audioNode.disconnect();
 		recordingAudioNode.stopRecord();
@@ -385,7 +383,7 @@
 		setReverbGain:setReverbGain,
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
-		version : 0.89
+		version : 0.905
 	};
 
 };
