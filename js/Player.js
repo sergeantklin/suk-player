@@ -2,11 +2,10 @@
 	var initParams = _initParams||{},
 		mediaElements = new MediaElements(),
 		audioContext = mediaElements.getAudioContextClass(),
-		BUFFER_SIZE = 1024;
+		BUFFER_SIZE = 4096;
 		
 	if(!audioContext){
 		var htmlPlayer = new Audio();
-		
 		htmlPlayer.oncanplay = function(){
 			initParams.onCanPlay&&initParams.onCanPlay();
 			initParams.onDecode&&initParams.onDecode();
@@ -16,6 +15,7 @@
 		}
 		initParams.onAudioContextError&&initParams.onAudioContextError();
 	} else{
+		// писалка видео и аудио с камеры
 		var	recorder = new Recorder({
 				audioContext:audioContext,
 				onRecordLevel:initParams.onRecordLevel,
@@ -23,27 +23,40 @@
 				BUFFER_SIZE:BUFFER_SIZE,
 				filters: mediaElements.createFilters()
 			}),
+			// загрузчик аудио данных (мелодии) по сети
 			preloader = new Preloader({
 				audioContext:audioContext
 			}),
+			// проигрыватель с возможностью модуляции
 			pitchPlayer = new PitchPlayer({
 				audioContext:audioContext,
 				BUFFER_SIZE:BUFFER_SIZE,
 				onPlay:onPlay,
 			}),
+			/*
 			recPitchPlayer = new PitchPlayer({
 				audioContext:audioContext,
 				BUFFER_SIZE:BUFFER_SIZE,
 				onPlay:onPlay,
 			}),
+			*/
+			// аудионода после проигрывателя (подключается к фильтрам)
 			audioNode,
+			// аудионода фильтра усиления
 			gainNode = audioContext.createGain(),
+			// текущее положение проигрывателя в процентах
 			position,
+			// текущее значение модуляции (-3..+3)
 			pitch,
+			// текущее значение скорости (-2..+2)
 			tempo,
+			// текущее значение громкомси (0..1)
 			volume,
+			// загруженный аудио буфер
 			soundBuffer,
+			// флаг проигрывания
 			playing,
+			/*
 			replaySourceNode,
 			recordingAudioNode = new RecordingAudioNode({
 				audioContext:audioContext,
@@ -51,7 +64,9 @@
 				supressRecord:false
 				
 			}),
+			*/
 			bufferDuration;
+			
 	}
 	function attachPitchPlayer(){
 		audioNode = pitchPlayer.attachSoundTouch({
@@ -99,8 +114,11 @@
 		gainNode.disconnect();
 		_node.connect(gainNode);
 		gainNode.connect(filters[0]);
+		/*
 		filters[filters.length - 1].connect(recordingAudioNode);		
-		recordingAudioNode.connect(audioContext.destination);		
+		recordingAudioNode.connect(audioContext.destination);
+		*/
+		filters[filters.length - 1].connect(audioContext.destination);		
 	}
 	function onPlay(_position,duration, correction){
 		correction = correction||0;
@@ -137,13 +155,15 @@
 			return;
 		}
 		pitchPlayer.pause();
+		/*
 		recPitchPlayer&&recPitchPlayer.pause();
+		*/
 		playing = null;
 		audioNode&&audioNode.disconnect();
+		/*
 		recordingAudioNode.stopRecord();
+		*/
 		recorder.stopRecord(supress);
-		//recorder.trimBuffer(recordingAudioNode.getLength());
-		//console.log(recordingAudioNode.getBuffer().duration - recorder.getBuffer().duration)
 		!supress&&initParams.onPause&&initParams.onPause();
 	}	
 	function startRecord() {
@@ -152,7 +172,9 @@
 		}
 		console.log('YOU CHOOSE START RECORD');
 		setPosition(0, true);
+		/*
 		recordingAudioNode.startRecord();
+		*/
 		recorder.startRecord();
 		play(true);
 	}			
@@ -163,11 +185,13 @@
 		if(!supress){
 			console.log('YOU CHOOSE STOP REPLAY');
 		}
-		replaySourceNode&&replaySourceNode.disconnect();
+		//replaySourceNode&&replaySourceNode.disconnect();
 		//setPosition(0);
 		recorder.stopReplay(supress);
 	}
 	function replay(delay, position, supress) {
+		console.log('DISABLED!');
+		return;
 		if(!audioContext){
 			return;
 		}
@@ -266,6 +290,8 @@
 		return bufferDuration;
 	}	
 	function getReplayDuration() {
+		console.log('DISABLED!');
+		return;
 		if(!audioContext){
 			return htmlPlayer.duration;
 		}
@@ -285,7 +311,6 @@
 		var buffer = audioContext.createBuffer(2,channels.left.length, audioContext.sampleRate);
 		function setChannel(channel, channelNumber){
 			var nowBuffering = buffer.getChannelData(channelNumber);
-			//console.log(channel)
 			for(var a=channel,i=0,ii=a.length;i<ii;i++){
 				nowBuffering[i] = a[i];
 			}
@@ -301,9 +326,9 @@
 		}
 		return {
 			video : recorder.getVideo(),
-			voice : new Blob([audioBufferToWav(recorder.getBuffer())],{type: 'audio/webm'}),
-			original : (recorder.getOriginalBuffer().length? new Blob([audioBufferToWav(recorder.getOriginalBuffer())],{type: 'audio/webm'}):null),
-			music : new Blob([audioBufferToWav(recordingAudioNode.getBuffer())],{type: 'audio/webm'}),
+			//voice : new Blob([audioBufferToWav(recorder.getBuffer())],{type: 'audio/webm'}),
+			//original : (recorder.getOriginalBuffer().length? new Blob([audioBufferToWav(recorder.getOriginalBuffer())],{type: 'audio/webm'}):null),
+			//music : new Blob([audioBufferToWav(recordingAudioNode.getBuffer())],{type: 'audio/webm'}),
 		};
 	}
 	function setReverbGain(value){
@@ -383,7 +408,7 @@
 		setReverbGain:setReverbGain,
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
-		version : 0.905
+		version : 0.906
 	};
 
 };
