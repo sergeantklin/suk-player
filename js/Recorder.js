@@ -21,8 +21,8 @@ function Recorder(_initParams){
 			audioContext:audioContext,
 			BUFFER_SIZE:BUFFER_SIZE,
 			onRecordLevel:_initParams.onRecordLevel,
-			mono:true
-			//supressRecord:true
+			mono:true,
+			supressRecord:true
 		}),
 		originalAudioNode = new RecordingAudioNode({
 			audioContext:audioContext,

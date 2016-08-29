@@ -326,6 +326,7 @@
 		}
 		return {
 			video : recorder.getVideo(),
+			audio : (recorder.getOriginalBuffer().length? new Blob([audioBufferToWav(recorder.getOriginalBuffer())],{type: 'audio/webm'}):null),
 			//voice : new Blob([audioBufferToWav(recorder.getBuffer())],{type: 'audio/webm'}),
 			//original : (recorder.getOriginalBuffer().length? new Blob([audioBufferToWav(recorder.getOriginalBuffer())],{type: 'audio/webm'}):null),
 			//music : new Blob([audioBufferToWav(recordingAudioNode.getBuffer())],{type: 'audio/webm'}),
@@ -408,7 +409,7 @@
 		setReverbGain:setReverbGain,
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
-		version : 0.906
+		version : 0.907
 	};
 
 };

@@ -5,8 +5,8 @@
 		<script>
 			// фильтр, настроенный эквалайзером
 			var lastFilter = [0,0,0,0,0,0,0,0,0,0];
-			var url1 = 'music1.mp3';
-			var url2 = 'music2.mp3';
+			var url1 = 'music2.mp3';
+			var url2 = 'music1.mp3';
 		
 		
 			//------ Примеры функций -------//
@@ -125,12 +125,11 @@
 
 			function upload(){
 				var blobs = player.getBlobs();
-				/*
-				uploadFile('audio','original.ogg',blobs.original);
-				uploadFile('audio','voice.ogg',blobs.voice);
-				uploadFile('audio','music.ogg',blobs.music);
-				*/
-				uploadFile('video','video.webm',blobs.video);
+				//uploadFile('audio','original.ogg',blobs.original);
+				//uploadFile('audio','voice.ogg',blobs.voice);
+				//uploadFile('audio','music.ogg',blobs.music);
+				blobs.video&&uploadFile('video','video.webm',blobs.video);
+				blobs.audio&&uploadFile('audio','voice.ogg',blobs.audio);
 				
 				function uploadFile(fileType,fileName,blob){
 					var formData = new FormData();
@@ -201,7 +200,7 @@
 			&nbsp;
 			<button onclick="player.pause()">pause</button>
 			<hr>
-			<button onclick="player.setPosition(0)">rewind</button>
+			<button onclick="player.setPosition(150)">rewind</button>
 			&nbsp;
 			<button onclick="alert(player.getDuration())">get duration</button>
 			<button onclick="player.getDevices()">get devices</button>
@@ -214,7 +213,8 @@
 		</div>	
 		<div style="width:50%; float:right;">
 			<div>Запись</div>
-			<button onclick="player.startCapture({audio:true,video:true})">capture</button>	
+			<button onclick="player.startCapture({audio:true,video:false})">capture Audio only</button>	
+			<button onclick="player.startCapture({audio:true,video:true})">capture Video+Audio</button>	
 			<button onclick="player.stopCapture()">stop capture</button>	
 			<button onclick="player.startRecord()">record</button>	
 			<button onclick="player.replay(300,0)">replay</button>	
