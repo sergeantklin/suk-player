@@ -3,7 +3,6 @@
 		mediaElements = new MediaElements(),
 		audioContext = mediaElements.getAudioContextClass(),
 		BUFFER_SIZE = 4096;
-		
 	if(!audioContext){
 		var htmlPlayer = new Audio();
 		htmlPlayer.oncanplay = function(){
@@ -324,6 +323,10 @@
 		if(!audioContext){
 			return;
 		}
+		
+		var blobs = recorder.getBlobs();
+
+		return blobs;
 		return {
 			video : recorder.getVideo(),
 			audio : (recorder.getOriginalBuffer().length? new Blob([audioBufferToWav(recorder.getOriginalBuffer())],{type: 'audio/webm'}):null),
@@ -409,7 +412,8 @@
 		setReverbGain:setReverbGain,
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
-		version : 0.907
+		audioContext:audioContext,
+		version : 0.911
 	};
 
 };

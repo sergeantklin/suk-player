@@ -17,7 +17,6 @@ function Recorder(_initParams){
 		BUFFER_SIZE = _initParams.BUFFER_SIZE,
 		stream, 
 		videoRecorder,
-		audioRecorder,
 		recordingAudioNode = new RecordingAudioNode({
 			audioContext:audioContext,
 			BUFFER_SIZE:BUFFER_SIZE,
@@ -40,7 +39,7 @@ function Recorder(_initParams){
 		gainNode = audioContext.createGain(),
 		destinationGainNode = audioContext.createGain(),
 		recording,
-		mediaType,
+		recordingVideo,
 		reverbSound,
 		reverbConvolver = true,
 		micLevel = 1,
@@ -66,12 +65,7 @@ function Recorder(_initParams){
 		destinationGainNode&&destinationGainNode.disconnect();
 		_initParams.filters[_initParams.filters.length - 1].disconnect();
 		
-
-		
-		sourceNode.connect(audioContext.destination);
-		
-		
-		
+		sourceNode.connect(audioContext.destination)
 		/*
 		
 		reverbGainNode.gain.value=reverbGain*micLevel;
@@ -101,32 +95,44 @@ function Recorder(_initParams){
 		
 		navigator.getUserMedia(_options, function(_stream) {
 			stream = _stream;
-			mediaType = _options;
-			if(_options.video){
+			recordingVideo = _options.video;
+			if(recordingVideo){
 				var video = document.querySelector('#capturingVideo');
 				video.volume=0;
 				video.src = window.URL.createObjectURL(_stream);
-			}else{
-				
-			}
+			};
 			sourceNode = audioContext.createMediaStreamSource(stream);
-			//buildAudioGraph();
+			buildAudioGraph();
 		},function(){});
 	};	
-	function getBlobs(){
-		return videoRecorder&&videoRecorder.getBlob()||null;
-	}	
 	function getVideo(){
 		return videoRecorder&&videoRecorder.getBlob()||null;
 	}
 	function startRecord(){
 		recording = true;
-		//recordingAudioNode.startRecord();
-		if(!videoRecorder){
-			videoRecorder = new MRecordRTC(stream);	
-		}
-		videoRecorder.mediaType = mediaType;
-		videoRecorder.startRecording();			
+		recordingAudioNode.startRecord();
+		if (recordingVideo){
+			if(videoRecorder){
+				videoRecorder.clearRecordedData;
+			}
+			videoRecorder = new RecordRTC(stream, {
+				type: 'video',
+				disableLogs:true,
+				canvas: {
+					width: 320,
+					height: 240
+				}
+			});
+			if (!videoRecorder){
+				videoRecorder.initRecorder(function() {
+					videoRecorder.startRecording();
+				});
+			} else{
+				videoRecorder.startRecording();			
+			}
+		} else{
+			originalAudioNode.startRecord();
+		}	
 	}
 	function stopStream(){
 		sourceNode.disconnect();
@@ -144,8 +150,8 @@ function Recorder(_initParams){
 		recordingAudioNode.stopRecord();
 		recording = false;
 		if(videoRecorder){
-			videoRecorder.stopRecording(function(url, type) {
-				callback&&callback(url, type);
+			videoRecorder.stopRecording(function(url) {
+				callback&&callback();
 			});
 		} else{
 			originalAudioNode.stopRecord();
@@ -221,8 +227,7 @@ function Recorder(_initParams){
 	function getOriginalBuffer() {
 		return originalAudioNode.getBuffer();
 	}
-
-	Storage.AudioContextConstructor	= audioContext;
+	
 	if(!navigator.getUserMedia){
 		_initParams.onGetUserMediaError&&_initParams.onGetUserMediaError();
 	}
@@ -234,7 +239,6 @@ function Recorder(_initParams){
 		stopCapture:stopCapture,
 		replay:replay,
 		getVideo:getVideo,
-		getBlobs:getBlobs,
 		getBuffer:getBuffer,
 		getOriginalBuffer:getOriginalBuffer,
 		trimBuffer:trimBuffer,

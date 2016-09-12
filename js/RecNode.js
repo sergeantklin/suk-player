@@ -1,4 +1,5 @@
 function RecordingAudioNode(_initParams){
+	console.error(1);
 	var initParams = _initParams||{},
 	audioContext = initParams.audioContext,
 	BUFFER_SIZE = initParams.BUFFER_SIZE,
