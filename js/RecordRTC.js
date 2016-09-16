@@ -876,7 +876,6 @@ function MRecordRTC(mediaStream) {
             if (typeof mediaType.audio === 'function') {
                 recorderType = mediaType.audio;
             }
-
             this.audioRecorder = new RecordRTC(mediaStream, {
                 type: 'audio',
                 bufferSize: this.bufferSize,

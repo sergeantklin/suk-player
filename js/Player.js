@@ -413,7 +413,7 @@
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
-		version : 0.911
+		version : 0.912
 	};
 
 };

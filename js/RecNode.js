@@ -1,5 +1,4 @@
 function RecordingAudioNode(_initParams){
-	console.error(1);
 	var initParams = _initParams||{},
 	audioContext = initParams.audioContext,
 	BUFFER_SIZE = initParams.BUFFER_SIZE,
@@ -12,6 +11,9 @@ function RecordingAudioNode(_initParams){
 	rightchannel = [];
 	
 	function onAudioProcess (e){
+		if(!recording){
+			return;
+		}
 		var left = e.inputBuffer.getChannelData (0);
 		var outLeft =  e.outputBuffer.getChannelData (0);
 		if(initParams.mono){

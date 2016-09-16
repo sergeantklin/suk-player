@@ -39,6 +39,8 @@ function Recorder(_initParams){
 		convolverNode = audioContext.createConvolver(),
 		gainNode = audioContext.createGain(),
 		destinationGainNode = audioContext.createGain(),
+		analyserNode = audioContext.createAnalyser(),
+		analyserFrequencyData = new Uint8Array(10),
 		recording,
 		mediaType,
 		reverbSound,
@@ -60,6 +62,7 @@ function Recorder(_initParams){
 		sourceNode&&sourceNode.disconnect();
 		convolverNode&&convolverNode.disconnect();
 		gainNode&&gainNode.disconnect();
+		analyserNode&&analyserNode.disconnect();
 		recordingAudioNode&&recordingAudioNode.disconnect();
 		originalAudioNode&&originalAudioNode.disconnect();
 		reverbGainNode&&reverbGainNode.disconnect();
@@ -68,7 +71,13 @@ function Recorder(_initParams){
 		
 
 		
-		sourceNode.connect(audioContext.destination);
+		reverbGainNode.gain.value=reverbGain*micLevel;
+		gainNode.gain.value = (1-reverbGain)*micLevel;
+
+		sourceNode.connect(reverbGainNode);
+		reverbGainNode.connect(analyserNode);
+		analyserNode.connect(destinationGainNode)
+		destinationGainNode.connect(audioContext.destination)
 		
 		
 		
@@ -110,7 +119,7 @@ function Recorder(_initParams){
 				
 			}
 			sourceNode = audioContext.createMediaStreamSource(stream);
-			//buildAudioGraph();
+			buildAudioGraph();
 		},function(){});
 	};	
 	function getBlobs(){
@@ -125,7 +134,9 @@ function Recorder(_initParams){
 		if(!videoRecorder){
 			videoRecorder = new MRecordRTC(stream);	
 		}
-		videoRecorder.mediaType = mediaType;
+		videoRecorder.bufferSize = 1024;
+		videoRecorder.sampleRate = 8000;
+		videoRecorder.numberOfAudioChannels = 1;
 		videoRecorder.startRecording();			
 	}
 	function stopStream(){
@@ -227,6 +238,18 @@ function Recorder(_initParams){
 		_initParams.onGetUserMediaError&&_initParams.onGetUserMediaError();
 	}
 	loadReverb();
+	
+	function updateRecord() {
+
+		requestAnimationFrame(updateRecord);
+		if (!stream||(destinationGainNode.gain.value==0)){
+			return;
+		}
+		// Get the new frequency data
+		analyserNode.getByteFrequencyData(analyserFrequencyData);
+		_initParams.onRecordLevel(analyserFrequencyData);
+	};
+	updateRecord();
 	return {
 		startRecord:startRecord,
 		startCapture:startCapture,	
