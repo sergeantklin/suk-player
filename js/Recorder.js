@@ -144,6 +144,7 @@ function Recorder(_initParams){
 		recordingAudioNode.disconnect();
 		originalAudioNode&&originalAudioNode.disconnect();
 		if(!stream) return;
+		videoRecorder = null;
 		stream.stop();
 		stream = null;
 	}
@@ -242,7 +243,7 @@ function Recorder(_initParams){
 	function updateRecord() {
 
 		requestAnimationFrame(updateRecord);
-		if (!stream||(destinationGainNode.gain.value==0)){
+		if (!stream){
 			return;
 		}
 		// Get the new frequency data
