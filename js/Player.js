@@ -125,7 +125,7 @@
 		position = _position;
 		if(Math.round(_position*1000)==1000){
 			pause(true);
-			stopReplay(true);
+			//stopReplay(true);
 			initParams.onEnd&&initParams.onEnd();
 		}else{
 			initParams.onTimeUpdate&&initParams.onTimeUpdate(_position*duration+(correction)/1000);
@@ -413,7 +413,7 @@
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
-		version : 0.915
+		version : 0.918
 	};
 
 };

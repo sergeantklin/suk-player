@@ -134,8 +134,8 @@ function Recorder(_initParams){
 		if(!videoRecorder){
 			videoRecorder = new MRecordRTC(stream);	
 		}
-		videoRecorder.bufferSize = 1024;
-		videoRecorder.sampleRate = 8000;
+		videoRecorder.bufferSize = _initParams.BUFFER_SIZE;
+		videoRecorder.sampleRate = 44100;
 		videoRecorder.numberOfAudioChannels = 1;
 		videoRecorder.startRecording();			
 	}
