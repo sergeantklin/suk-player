@@ -123,14 +123,28 @@ function Recorder(_initParams){
 		},function(){});
 	};	
 	function getBlobs(){
-		return videoRecorder&&videoRecorder.getBlob()||null;
+		return videoRecorder&&{video:videoRecorder.getBlob()}||null;
 	}	
 	function getVideo(){
-		return videoRecorder&&videoRecorder.getBlob()||null;
+		return videoRecorder&&{video:videoRecorder.getBlob()}||null;
 	}
 	function startRecord(){
 		recording = true;
 		//recordingAudioNode.startRecord();
+		
+		
+		videoRecorder = new RecordRTC(stream, {
+			type: 'video',
+			video: document.querySelector('#capturingVideo'),
+			frameInterval: 10,
+			disableLogs: true,
+			recorderType: MediaStreamRecorder,
+			mimeType: 'video/webm'
+		});
+		videoRecorder.startRecording();
+		
+		return;
+		
 		if(!videoRecorder){
 			videoRecorder = new MRecordRTC(stream);	
 		}
