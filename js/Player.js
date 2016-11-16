@@ -64,6 +64,9 @@
 				
 			}),
 			*/
+			analyseMusic = false,
+			analyserNode = audioContext.createAnalyser(),
+			analyserFrequencyData = new Uint8Array(10),
 			bufferDuration;
 			
 	}
@@ -111,8 +114,18 @@
 		var filters = mediaElements.filters;
 		_node.disconnect();
 		gainNode.disconnect();
-		_node.connect(gainNode);
+		
+		if(analyseMusic){
+			_node.connect(analyserNode);
+			analyserNode.connect(gainNode);
+		} else{
+			_node.connect(gainNode);
+		}
+		
+		
+		
 		gainNode.connect(filters[0]);
+		
 		/*
 		filters[filters.length - 1].connect(recordingAudioNode);		
 		recordingAudioNode.connect(audioContext.destination);
@@ -386,6 +399,21 @@
 		}
 		recorder.setOutput(value)
 	}
+	function updateRecord() {
+
+		requestAnimationFrame(updateRecord);
+		if (!analyseMusic || !playing){
+			return;
+		}
+		// Get the new frequency data
+		analyserNode.getByteFrequencyData(analyserFrequencyData);
+		initParams.onMusicLevel&&initParams.onMusicLevel(analyserFrequencyData);
+	};
+	function setAnalyseMusic(value) {
+		analyseMusic = value;
+		pause();
+	};
+	updateRecord();
 	return {
 		load:load,
 		preload:preload,
@@ -413,7 +441,8 @@
 		setReverbConvolver:setReverbConvolver,
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
-		version : 0.919
+		setAnalyseMusic:setAnalyseMusic,
+		version : 0.920
 	};
 
 };

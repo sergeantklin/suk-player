@@ -103,7 +103,7 @@
 		}
 		audioNode = initParams.audioContext.createScriptProcessor ? initParams.audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2) : initParams.audioContext.createJavaScriptNode(BUFFER_SIZE, 2, 2);
 		soundBuffer = options.soundBuffer;
-		if(options.pitch!=1){
+		if((options.pitch!=1)|| navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
 			audioNode.onaudioprocess = onPitchAudioProcess;
 			var currentPosition = options.position * (options.soundBuffer.duration * initParams.audioContext.sampleRate);
 			currentPosition = Math.round(options.soundBuffer.length*options.position);

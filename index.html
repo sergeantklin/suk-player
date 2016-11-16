@@ -5,8 +5,8 @@
 		<script>
 			// фильтр, настроенный эквалайзером
 			var lastFilter = [0,0,0,0,0,0,0,0,0,0];
-			var url1 = 'music2.mp3';
-			var url2 = 'music1.mp3';
+			var url1 = 'music1.mp3';
+			var url2 = 'example.ogg';
 		
 		
 			//------ Примеры функций -------//
@@ -29,6 +29,14 @@
 					player.setFilter(lastFilter);
 				}
 			}		
+			// установить анализатор 		
+			function setAnalyseMusic(e){
+				if(e.target.checked){
+					player.setAnalyseMusic(true);	
+				} else{
+					player.setAnalyseMusic(false);
+				}
+			}	
 			// установить фильтр эквалайзера			
 			function toggleFilter(e){
 				if(e.target.checked){
@@ -159,6 +167,9 @@
 			function onStopRecord(devices){
 				console.log('record stopped')
 			}
+			function onMusicLevel(value){
+				console.log(value)
+			}
 			var player = new SUK_Player({
 				onAudioContextError:onAudioContextError, // воспроизведение невозможно
 				onAudioContextError:onAudioContextError, // воспроизведение невозможно
@@ -176,7 +187,8 @@
 				onPreload:onPreload, // предзагрузка файла завершена
 				onRecordLevel:onRecordLevel, // уровень записываемого голоса
 				onGetDevices:onGetDevices, // ответ на запрос подключенных устройств
-				onStopRecord:onStopRecord // запись окончена, можно воспроизводить
+				onStopRecord:onStopRecord, // запись окончена, можно воспроизводить
+				onMusicLevel:onMusicLevel // инфа по музыке
 			});
 			player.load(url2);
 		</script>
@@ -210,6 +222,7 @@
 			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleTone(event)">set tone</label><br/>
 			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="toggleFilter(event)">set filter</label><br/>
 			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="detachFilter(event)">detach filter</label><br/>
+			<label style="display:none" class="afterDecode"><input type="checkbox" onclick="setAnalyseMusic(event)">set analyse</label><br/>
 		</div>	
 		<div style="width:50%; float:right;">
 			<div>Запись</div>
