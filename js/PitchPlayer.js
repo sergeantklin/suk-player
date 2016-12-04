@@ -30,6 +30,7 @@
 
 	function stopPlayingInterval(){
 		clearInterval(playingInterval);
+		playingInterval = null;
 	}
 	function startPlayingInterval(){
 		stopPlayingInterval();
@@ -80,8 +81,11 @@
 			if (lastPosition!=position){
 				lastPosition = position;
 				initParams.onPlay&&initParams.onPlay(position,soundBuffer.duration);
-				startPlayingInterval();
+				if(playingInterval){
+					startPlayingInterval();
+				};
 			}
+			
 			//leftchannel.push (new Float32Array (l));
 			//rightchannel.push (new Float32Array (r));
 			//blob = new Blob([e.data], {

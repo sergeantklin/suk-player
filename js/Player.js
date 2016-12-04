@@ -3,7 +3,31 @@
 		mediaElements = new MediaElements(),
 		audioContext = mediaElements.getAudioContextClass(),
 		BUFFER_SIZE = 4096;
-	if(!audioContext){
+  var useHtmlPlayer = !audioContext || (navigator.userAgent.toLowerCase().indexOf('webkit')==-1);
+	
+  // писалка видео и аудио с камеры
+  if(audioContext){
+    var	recorder = new Recorder({
+      audioContext:audioContext,
+      onRecordLevel:initParams.onRecordLevel,
+      onStopRecord:initParams.onStopRecord,
+      BUFFER_SIZE:BUFFER_SIZE,
+      filters: mediaElements.createFilters()
+    })
+  }
+  // текущее положение проигрывателя в процентах
+  var position,
+  // текущее значение модуляции (-3..+3)
+  pitch,
+  // текущее значение скорости (-2..+2)
+  tempo,
+  // текущее значение громкомси (0..1)
+  volume,
+  // загруженный аудио буфер
+  soundBuffer,
+  // флаг проигрывания
+  playing
+    if(useHtmlPlayer){
 		var htmlPlayer = new Audio();
 		htmlPlayer.oncanplay = function(){
 			initParams.onCanPlay&&initParams.onCanPlay();
@@ -14,16 +38,8 @@
 		}
 		initParams.onAudioContextError&&initParams.onAudioContextError();
 	} else{
-		// писалка видео и аудио с камеры
-		var	recorder = new Recorder({
-				audioContext:audioContext,
-				onRecordLevel:initParams.onRecordLevel,
-				onStopRecord:initParams.onStopRecord,
-				BUFFER_SIZE:BUFFER_SIZE,
-				filters: mediaElements.createFilters()
-			}),
 			// загрузчик аудио данных (мелодии) по сети
-			preloader = new Preloader({
+			var preloader = new Preloader({
 				audioContext:audioContext
 			}),
 			// проигрыватель с возможностью модуляции
@@ -43,18 +59,6 @@
 			audioNode,
 			// аудионода фильтра усиления
 			gainNode = audioContext.createGain(),
-			// текущее положение проигрывателя в процентах
-			position,
-			// текущее значение модуляции (-3..+3)
-			pitch,
-			// текущее значение скорости (-2..+2)
-			tempo,
-			// текущее значение громкомси (0..1)
-			volume,
-			// загруженный аудио буфер
-			soundBuffer,
-			// флаг проигрывания
-			playing,
 			/*
 			replaySourceNode,
 			recordingAudioNode = new RecordingAudioNode({
@@ -91,7 +95,7 @@
 		return mediaElements.getDevices(initParams.onGetDevices);
 	};
 	function load(_url){
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.src = _url;
 			console.log(htmlPlayer);
 			return;
@@ -136,7 +140,7 @@
 		correction = correction||0;
 		if(!_position) return;
 		position = _position;
-		if(Math.round(_position*1000)==1000){
+		if((Math.round(_position*1000)==1000) || (!playing)){
 			pause(true);
 			//stopReplay(true);
 			initParams.onEnd&&initParams.onEnd();
@@ -148,7 +152,7 @@
 		if(!supress){
 			console.log('YOU CHOOSE PLAY');
 		}
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.play();
 			return;
 		}
@@ -162,7 +166,7 @@
 		if(!supress){
 			console.log('YOU CHOOSE PAUSE');
 		}
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.pause();
 			return;
 		}
@@ -203,6 +207,7 @@
 	}
 	function replay(delay, position, supress) {
 		console.log('DISABLED!');
+    /*
 		return;
 		if(!audioContext){
 			return;
@@ -226,9 +231,10 @@
 				replaySourceNode.connect(audioContext.destination);
 			},delay);
 		});
+    */
 	}
 	function setTone(_newPitch, supress) {
-		if(!audioContext){
+		if(useHtmlPlayer){
 			return;
 		}
 		if(!supress){
@@ -243,7 +249,7 @@
 		}
 	}	
 	function setFilter(_freqArray, supress) {
-		if(!audioContext){
+		if(useHtmlPlayer){
 			return;
 		}
 		if(!supress){
@@ -255,7 +261,7 @@
 		}
 	}	
 	function detachFilter(supress) {
-		if(!audioContext){
+		if(useHtmlPlayer){
 			return;
 		}
 		if(!supress){
@@ -267,7 +273,7 @@
 		if(!supress){
 			console.log('YOU CHOOSE SET POSITION');
 		}
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.currentTime = _value;
 			return;
 		}
@@ -283,7 +289,7 @@
 		if(!supress){
 			console.log('YOU CHOOSE SET SPEED');
 		}
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.playbackRate = _value;
 			return;
 		}
@@ -296,24 +302,26 @@
 		}
 	}	
 	function getDuration() {
-		if(!audioContext){
+		if(useHtmlPlayer){
 			return htmlPlayer.duration;
 		}
 		return bufferDuration;
 	}	
 	function getReplayDuration() {
 		console.log('DISABLED!');
+    /*
 		return;
-		if(!audioContext){
+		if(useHtmlPlayer){
 			return htmlPlayer.duration;
 		}
 		return recordingAudioNode.getDuration();
+    */
 	}	
 	function setVolume(_value, supress) {
 		if(!supress){
 			console.log('YOU CHOOSE SET VOLUME');
 		}
-		if(!audioContext){
+		if(useHtmlPlayer){
 			htmlPlayer.volume = _value;
 			return;
 		}
@@ -400,7 +408,9 @@
 		recorder.setOutput(value)
 	}
 	function updateRecord() {
-
+		if(useHtmlPlayer){
+			return;
+		}
 		requestAnimationFrame(updateRecord);
 		if (!analyseMusic || !playing){
 			return;
@@ -442,7 +452,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.920
+		version : 0.922
 	};
 
 };

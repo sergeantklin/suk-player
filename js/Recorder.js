@@ -18,6 +18,7 @@ function Recorder(_initParams){
 		stream, 
 		videoRecorder,
 		audioRecorder,
+    /*
 		recordingAudioNode = new RecordingAudioNode({
 			audioContext:audioContext,
 			BUFFER_SIZE:BUFFER_SIZE,
@@ -30,10 +31,12 @@ function Recorder(_initParams){
 			BUFFER_SIZE:BUFFER_SIZE,
 			mono:true
 		}),
+    
 		recPitchPlayer = new PitchPlayer({
 			audioContext:audioContext,
 			BUFFER_SIZE:BUFFER_SIZE
 		}),
+    */
 		sourceNode,
 		replaySourceNode,
 		convolverNode = audioContext.createConvolver(),
@@ -63,8 +66,8 @@ function Recorder(_initParams){
 		convolverNode&&convolverNode.disconnect();
 		gainNode&&gainNode.disconnect();
 		analyserNode&&analyserNode.disconnect();
-		recordingAudioNode&&recordingAudioNode.disconnect();
-		originalAudioNode&&originalAudioNode.disconnect();
+		//recordingAudioNode&&recordingAudioNode.disconnect();
+		//originalAudioNode&&originalAudioNode.disconnect();
 		reverbGainNode&&reverbGainNode.disconnect();
 		destinationGainNode&&destinationGainNode.disconnect();
 		_initParams.filters[_initParams.filters.length - 1].disconnect();
@@ -155,8 +158,8 @@ function Recorder(_initParams){
 	}
 	function stopStream(){
 		sourceNode.disconnect();
-		recordingAudioNode.disconnect();
-		originalAudioNode&&originalAudioNode.disconnect();
+		//recordingAudioNode.disconnect();
+		//originalAudioNode&&originalAudioNode.disconnect();
 		if(!stream) return;
 		videoRecorder = null;
 		stream.stop();
@@ -167,19 +170,19 @@ function Recorder(_initParams){
 			var callback = _initParams.onStopRecord;
 			console.log('YOU CHOOSE STOP RECORD');
 		}
-		recordingAudioNode.stopRecord();
+		//recordingAudioNode.stopRecord();
 		recording = false;
 		if(videoRecorder){
 			videoRecorder.stopRecording(function(url, type) {
 				callback&&callback(url, type);
 			});
 		} else{
-			originalAudioNode.stopRecord();
+			//originalAudioNode.stopRecord();
 			callback&&callback();
 		}
 	}
 	function trimBuffer(length){
-		return recordingAudioNode.trimBuffer(length);
+		//return recordingAudioNode.trimBuffer(length);
 	}
 	function replay(position,callback){
 		var buffer = recordingAudioNode.getBuffer();
@@ -225,6 +228,7 @@ function Recorder(_initParams){
 		reverbConvolver = value;
 		buildAudioGraph();
 	}
+  /*
 	function loadReverb (){
 		var preloadRequest = new XMLHttpRequest();
 		preloadRequest.open('GET', 'reverb.wav', true);
@@ -236,23 +240,24 @@ function Recorder(_initParams){
 		};		
 		preloadRequest.send();
 	}
+  */
 	function setFilter(_freqArray, supress) {
 		for(var a=_freqArray,i=0,ii=a.length;i<ii;i++){
 			_initParams.filters[i].gain.value = a[i];
 		}
 	}
 	function getBuffer() {
-		return recordingAudioNode.getBuffer();
+		//return recordingAudioNode.getBuffer();
 	}	
 	function getOriginalBuffer() {
-		return originalAudioNode.getBuffer();
+		//return originalAudioNode.getBuffer();
 	}
 
 	Storage.AudioContextConstructor	= audioContext;
 	if(!navigator.getUserMedia){
 		_initParams.onGetUserMediaError&&_initParams.onGetUserMediaError();
 	}
-	loadReverb();
+	//loadReverb();
 	
 	function updateRecord() {
 
