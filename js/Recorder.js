@@ -16,6 +16,7 @@ function Recorder(_initParams){
 	var audioContext = _initParams.audioContext,
 		BUFFER_SIZE = _initParams.BUFFER_SIZE,
 		stream, 
+    logging = _initParams.logging,
 		videoRecorder,
 		audioRecorder,
     /*
@@ -76,7 +77,6 @@ function Recorder(_initParams){
 		
 		reverbGainNode.gain.value=reverbGain*micLevel;
 		gainNode.gain.value = (1-reverbGain)*micLevel;
-
 		sourceNode.connect(reverbGainNode);
 		reverbGainNode.connect(analyserNode);
 		analyserNode.connect(destinationGainNode)
@@ -107,10 +107,13 @@ function Recorder(_initParams){
 	};
 	function stopCapture(){
 		stopStream();
+    if(sourceNode){
+      sourceNode.disconnect();
+    }
 	}
 	function startCapture(_options){
 		_options = _options||{audio: true, video: true};
-		
+		/*
 		navigator.getUserMedia(_options, function(_stream) {
 			stream = _stream;
 			mediaType = _options;
@@ -121,9 +124,27 @@ function Recorder(_initParams){
 			}else{
 				
 			}
-			sourceNode = audioContext.createMediaStreamSource(stream);
-			buildAudioGraph();
+			
 		},function(){});
+    */
+    
+    function successCallback(_stream) {
+      stream = _stream;
+        if(_options.video){
+          var video = document.querySelector('#capturingVideo');
+          video.volume=0;
+          video.src = window.URL.createObjectURL(stream);
+        }
+      sourceNode = audioContext.createMediaStreamSource(stream);
+      buildAudioGraph();
+    }
+
+    function errorCallback(error) {
+        logging && console.log("ERROR CAPTURING", error)
+    }
+    
+    
+    navigator.mediaDevices.getUserMedia(_options).then(successCallback).catch(errorCallback);
 	};	
 	function getBlobs(){
 		return videoRecorder&&{video:videoRecorder.getBlob()}||null;
@@ -135,19 +156,20 @@ function Recorder(_initParams){
 		recording = true;
 		//recordingAudioNode.startRecord();
 		
-		
 		videoRecorder = new RecordRTC(stream, {
 			type: 'video',
 			video: document.querySelector('#capturingVideo'),
 			frameInterval: 10,
-			disableLogs: true,
+			disableLogs: !logging,
 			recorderType: MediaStreamRecorder,
-			mimeType: 'video/webm'
+			mimeType: 'video/webm',
+      //audioBitsPerSecond: 128000,
+      //videoBitsPerSecond: 128000
 		});
 		videoRecorder.startRecording();
 		
 		return;
-		
+
 		if(!videoRecorder){
 			videoRecorder = new MRecordRTC(stream);	
 		}
@@ -168,12 +190,13 @@ function Recorder(_initParams){
 	function stopRecord(supress){
 		if(recording&&!supress){
 			var callback = _initParams.onStopRecord;
-			console.log('YOU CHOOSE STOP RECORD');
+			logging && console.log('YOU CHOOSE STOP RECORD');
 		}
 		//recordingAudioNode.stopRecord();
 		recording = false;
 		if(videoRecorder){
 			videoRecorder.stopRecording(function(url, type) {
+        
 				callback&&callback(url, type);
 			});
 		} else{

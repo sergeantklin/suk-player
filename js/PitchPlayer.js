@@ -125,7 +125,6 @@
 			audioNode.onaudioprocess = onAudioProcess;
 			audioNode.loop  = true;
 			source.connect(audioNode);
-			console.log(options.position)
 			source.start(0,options.position*soundBuffer.duration);
 		}
 		return audioNode;

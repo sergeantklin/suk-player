@@ -8,6 +8,7 @@
   // писалка видео и аудио с камеры
   if(audioContext){
     var	recorder = new Recorder({
+      logging:initParams.logging,
       audioContext:audioContext,
       onRecordLevel:initParams.onRecordLevel,
       onStopRecord:initParams.onStopRecord,
@@ -26,7 +27,9 @@
   // загруженный аудио буфер
   soundBuffer,
   // флаг проигрывания
-  playing
+  playing,
+  
+  logging = initParams.logging
     if(useHtmlPlayer){
 		var htmlPlayer = new Audio();
 		htmlPlayer.oncanplay = function(){
@@ -97,7 +100,7 @@
 	function load(_url){
 		if(useHtmlPlayer){
 			htmlPlayer.src = _url;
-			console.log(htmlPlayer);
+			logging && console.log(htmlPlayer);
 			return;
 		}
 		if(audioNode){
@@ -150,7 +153,7 @@
 	}
 	function play(supress) {
 		if(!supress){
-			console.log('YOU CHOOSE PLAY');
+			logging && console.log('YOU CHOOSE PLAY');
 		}
 		if(useHtmlPlayer){
 			htmlPlayer.play();
@@ -164,8 +167,9 @@
 	}
 	function pause(supress) {
 		if(!supress){
-			console.log('YOU CHOOSE PAUSE');
+			logging && console.log('YOU CHOOSE PAUSE');
 		}
+		recorder&&recorder.stopRecord(supress);
 		if(useHtmlPlayer){
 			htmlPlayer.pause();
 			return;
@@ -179,14 +183,13 @@
 		/*
 		recordingAudioNode.stopRecord();
 		*/
-		recorder.stopRecord(supress);
 		!supress&&initParams.onPause&&initParams.onPause();
 	}	
 	function startRecord() {
 		if(!audioContext){
 			return;
 		}
-		console.log('YOU CHOOSE START RECORD');
+		logging && console.log('YOU CHOOSE START RECORD');
 		setPosition(0, true);
 		/*
 		recordingAudioNode.startRecord();
@@ -199,21 +202,21 @@
 			return;
 		}
 		if(!supress){
-			console.log('YOU CHOOSE STOP REPLAY');
+			logging && console.log('YOU CHOOSE STOP REPLAY');
 		}
 		//replaySourceNode&&replaySourceNode.disconnect();
 		//setPosition(0);
 		recorder.stopReplay(supress);
 	}
 	function replay(delay, position, supress) {
-		console.log('DISABLED!');
+		logging && console.log('DISABLED!');
     /*
 		return;
 		if(!audioContext){
 			return;
 		}
 		if(!supress){
-			console.log('YOU CHOOSE REPLAY');
+			logging && console.log('YOU CHOOSE REPLAY');
 		}
 		delay = delay||0;
 
@@ -238,7 +241,7 @@
 			return;
 		}
 		if(!supress){
-			console.log('YOU CHOOSE SET TONE');
+			logging && console.log('YOU CHOOSE SET TONE');
 		}
 		var isPlaying = !!playing;
 		pause(true);
@@ -253,7 +256,7 @@
 			return;
 		}
 		if(!supress){
-			console.log('YOU CHOOSE SET FILTER');
+			logging && console.log('YOU CHOOSE SET FILTER');
 		}
 		var filters = mediaElements.filters;
 		for(var a=_freqArray,i=0,ii=a.length;i<ii;i++){
@@ -265,13 +268,13 @@
 			return;
 		}
 		if(!supress){
-			console.log('YOU CHOOSE DETACH FILTER');
+			logging && console.log('YOU CHOOSE DETACH FILTER');
 		}
 		setFilter([0,0,0,0,0,0,0,0,0,0], true)
 	}
 	function setPosition(_value, supress) {
 		if(!supress){
-			console.log('YOU CHOOSE SET POSITION');
+			logging && console.log('YOU CHOOSE SET POSITION');
 		}
 		if(useHtmlPlayer){
 			htmlPlayer.currentTime = _value;
@@ -287,7 +290,7 @@
 	}	
 	function setSpeed(_value, supress) {
 		if(!supress){
-			console.log('YOU CHOOSE SET SPEED');
+			logging && console.log('YOU CHOOSE SET SPEED');
 		}
 		if(useHtmlPlayer){
 			htmlPlayer.playbackRate = _value;
@@ -308,7 +311,7 @@
 		return bufferDuration;
 	}	
 	function getReplayDuration() {
-		console.log('DISABLED!');
+		logging && console.log('DISABLED!');
     /*
 		return;
 		if(useHtmlPlayer){
@@ -319,7 +322,7 @@
 	}	
 	function setVolume(_value, supress) {
 		if(!supress){
-			console.log('YOU CHOOSE SET VOLUME');
+			logging && console.log('YOU CHOOSE SET VOLUME');
 		}
 		if(useHtmlPlayer){
 			htmlPlayer.volume = _value;
@@ -378,21 +381,21 @@
 		if(!audioContext){
 			return;
 		}
-		console.log('YOU CHOOSE START CAPTURE');
+		logging && console.log('YOU CHOOSE START CAPTURE');
 		recorder.startCapture(_options);
 	}	
 	function stopCapture(){
 		if(!audioContext){
 			return;
 		}
-		console.log('YOU CHOOSE STOP CAPTURE');
+		logging && console.log('YOU CHOOSE STOP CAPTURE');
 		recorder.stopCapture();
 	}	
 	function setRecordFilter(value){
 		if(!audioContext){
 			return;
 		}
-		console.log('YOU CHOOSE SET RECORD FILTER');
+		logging && console.log('YOU CHOOSE SET RECORD FILTER');
 		recorder.setFilter(value);
 	}
 	function setMicLevel(value){
@@ -452,7 +455,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.922
+		version : 0.925
 	};
 
 };

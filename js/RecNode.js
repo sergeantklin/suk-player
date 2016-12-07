@@ -48,7 +48,6 @@ function RecordingAudioNode(_initParams){
 		var newLeftChannel = [],
 			newRightChannel = [];
 		for(var a=leftchannel,i=0,ii=a.length;i<ii;i++){
-			console.log(a[i])
 				newLeftChannel.push(a[i]);
 				newRightChannel.push(rightchannel[i]);
 		}
