@@ -39,6 +39,9 @@
 		htmlPlayer.ontimeupdate = function(){
 			initParams.onTimeUpdate&&initParams.onTimeUpdate(htmlPlayer.currentTime);
 		}
+		htmlPlayer.onended = function(){
+			initParams.onEnd&&initParams.onEnd();
+		}
 		initParams.onAudioContextError&&initParams.onAudioContextError();
 	} else{
 			// загрузчик аудио данных (мелодии) по сети
@@ -455,7 +458,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.925
+		version : 0.926
 	};
 
 };
