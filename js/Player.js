@@ -429,16 +429,23 @@
 		analyseMusic = value;
 		pause();
 	};
+  function setPlay () {
+    attachPitchPlayer();
+    play();
+  };
+  function setPause () {
+    pause();
+  };
 	updateRecord();
 	return {
 		load:load,
 		preload:preload,
-		play:play,
+		play:setPlay,
 		setPosition:setPosition,
 		setTone:setTone,
 		setSpeed:setSpeed,
 		setVolume:setVolume,
-		pause:pause,
+		pause:setPause,
 		startRecord:startRecord,
 		startCapture:startCapture,		
 		stopCapture:stopCapture,
@@ -458,7 +465,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.926
+		version : 0.927
 	};
 
 };

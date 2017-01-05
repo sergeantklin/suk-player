@@ -12,6 +12,7 @@
 		playingInterval,
 		ticksTotal,
 		currentTick,
+    source,
 		soundTouchSource = {
 			extract: function (target, numFrames, position) {
 				var l = soundBuffer.getChannelData(0);
@@ -102,6 +103,10 @@
 	}
 
 	function attachSoundTouch(options){
+    if (source) {
+      source.stop(0);
+      source = null;
+    }
 		if (audioNode){
 			audioNode.disconnect();
 		}
@@ -118,9 +123,10 @@
 			simpleFilter = new SimpleFilter(soundTouchSource, soundTouch);
 			simpleFilter.sourcePosition = currentPosition;	
 		} else{
-			var source = initParams.audioContext.createBufferSource();
+			source = initParams.audioContext.createBufferSource();
 			source.buffer = soundBuffer;
-			ticksTotal = Math.floor(soundBuffer.length/BUFFER_SIZE);
+      source.playbackRate.value = options.tempo;
+			ticksTotal = Math.floor(soundBuffer.length/BUFFER_SIZE)/options.tempo;
 			currentTick = Math.floor(ticksTotal*options.position);
 			audioNode.onaudioprocess = onAudioProcess;
 			audioNode.loop  = true;
