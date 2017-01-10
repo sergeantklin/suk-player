@@ -430,7 +430,9 @@
 		pause();
 	};
   function setPlay () {
-    attachPitchPlayer();
+    if(!useHtmlPlayer){
+      attachPitchPlayer();
+		}
     play();
   };
   function setPause () {
@@ -465,7 +467,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.927
+		version : 0.928
 	};
 
 };
