@@ -27,9 +27,12 @@
 			preloadRequest.send();
 		}
 	}
-	function decodeData(data, callback, callbacks){
-		initParams.audioContext.decodeAudioData(data, function(theBuffer){
-			callback(theBuffer);
+	function decodeData(request, callback, callbacks){
+		initParams.audioContext.decodeAudioData(request.response, function(theBuffer){
+      if (request === preloadRequest){
+        console.log(123)
+        callback(theBuffer);
+      }
 		}, callbacks.onDecodeError?callbacks.onDecodeError:function(){console.log('decode error')})
 		
 	};
@@ -41,7 +44,7 @@
 		preloadRequest.open('GET', url, true);
 		preloadRequest.responseType = 'arraybuffer';
 		preloadRequest.onload = function(){
-			decodeData(preloadRequest.response,callback,callbacks)
+			decodeData(preloadRequest,callback,callbacks)
 		};	
 		preloadRequest.onerror = callbacks.onLoadError;		
 		preloadRequest.onabort = callbacks.onLoadAbort;		

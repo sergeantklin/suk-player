@@ -109,6 +109,8 @@
 		if(audioNode){
 			pause();
 		}
+    soundBuffer = audioContext.createBuffer(1, 1, audioContext.sampleRate);
+    bufferDuration = 0;
 		preloader.load(_url, function(_buffer){
 			soundBuffer = _buffer;
 			bufferDuration = soundBuffer.duration;
@@ -146,7 +148,7 @@
 		correction = correction||0;
 		if(!_position) return;
 		position = _position;
-		if((Math.round(_position*1000)==1000) || (!playing)){
+		if((_position>1) || (Math.round(_position*1000)==1000)){
 			pause(true);
 			//stopReplay(true);
 			initParams.onEnd&&initParams.onEnd();
@@ -162,6 +164,9 @@
 			htmlPlayer.play();
 			return;
 		}
+    if(!soundBuffer || !bufferDuration) {
+      return
+    }
 		connectNodeToDestination(audioNode);
 		onPlay();
 		playing = true;
@@ -467,7 +472,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.928
+		version : 0.931
 	};
 
 };
