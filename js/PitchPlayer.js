@@ -104,7 +104,11 @@
 
 	function attachSoundTouch(options){
     if (source) {
-      source.stop(0);
+      try{
+        source.stop(0);
+      } catch (e) {
+        
+      }
       source = null;
     }
 		if (audioNode){
