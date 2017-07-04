@@ -30,7 +30,6 @@
 	function decodeData(request, callback, callbacks){
 		initParams.audioContext.decodeAudioData(request.response, function(theBuffer){
       if (request === preloadRequest){
-        console.log(123)
         callback(theBuffer);
       }
 		}, callbacks.onDecodeError?callbacks.onDecodeError:function(){console.log('decode error')})
@@ -44,13 +43,17 @@
 		preloadRequest.open('GET', url, true);
 		preloadRequest.responseType = 'arraybuffer';
 		preloadRequest.onload = function(){
-			decodeData(preloadRequest,callback,callbacks)
+			if (preloadRequest.status !== 200) {
+				callbacks.onLoadError && callbacks.onLoadError(preloadRequest);	
+			} else {
+				decodeData(preloadRequest,callback,callbacks)
+			}
 		};	
 		preloadRequest.onerror = callbacks.onLoadError;		
 		preloadRequest.onabort = callbacks.onLoadAbort;		
 		preloadRequest.onprogress = function(event){
-			callbacks.onLoadProgress&&callbacks.onLoadProgress(event.loaded/event.total);	
-		}			
+			callbacks.onLoadProgress && callbacks.onLoadProgress(event.loaded/event.total);	
+		}	
 		preloadRequest.send();
 	}
 	function preload(array){
