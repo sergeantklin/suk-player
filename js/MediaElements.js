@@ -34,9 +34,12 @@ function MediaElements(_initParams){
 		function createFilter (frequency) {
 			var filter = audioContext.createBiquadFilter();
 			filter.type = 'peaking';
-			filter.frequency.value = frequency;
-			filter.Q.value = 1;
-			filter.gain.value = 0;
+			filter.frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.01);
+			filter.Q.setTargetAtTime(1, audioContext.currentTime, 0.01);
+			filter.gain.setTargetAtTime(0, audioContext.currentTime, 0.01);
+			// filter.frequency.value = frequency;
+			// filter.Q.value = 1;
+			// filter.gain.value = 0;
 			return filter;
 		};
 		var frequencies = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];

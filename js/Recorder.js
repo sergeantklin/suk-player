@@ -75,7 +75,8 @@ function Recorder(_initParams){
 		
 
 		
-		reverbGainNode.gain.value=reverbGain*micLevel;
+		reverbGainNode.gain.setTargetAtTime(reverbGain*micLevel, audioContext.currentTime, 0.01);
+		//reverbGainNode.gain.value=reverbGain*micLevel;
 		gainNode.gain.value = (1-reverbGain)*micLevel;
 		sourceNode.connect(reverbGainNode);
 		reverbGainNode.connect(analyserNode);

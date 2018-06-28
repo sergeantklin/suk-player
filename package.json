@@ -1,0 +1,32 @@
+{
+  "name": "suk-player",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "audiobuffer-to-wav": "^1.0.0",
+    "express": "^4.13.4",
+    "fs": "^0.0.1-security",
+    "gulp": "^3.9.1",
+    "graceful-fs": "^4.1.11",
+    "gulp-concat": "^2.6.1",
+    "gulp-uglify": "^3.0.0",
+    "https": "^1.0.0",
+    "http": "^0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergeantklin/suk-player.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergeantklin/suk-player/issues"
+  },
+  "homepage": "https://github.com/sergeantklin/suk-player#readme"
+}

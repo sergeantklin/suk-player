@@ -2,7 +2,7 @@
 	var initParams = _initParams||{},
 		mediaElements = new MediaElements(),
 		audioContext = mediaElements.getAudioContextClass(),
-		BUFFER_SIZE = 4096;
+		BUFFER_SIZE = 2048;
   var useHtmlPlayer = !audioContext || (navigator.userAgent.toLowerCase().indexOf('webkit')==-1);
 	
   // писалка видео и аудио с камеры
@@ -472,7 +472,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : 0.933
+		version : '0.934(2048)'
 	};
 
 };
