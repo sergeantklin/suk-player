@@ -472,7 +472,7 @@
 		setRecordFilter:setRecordFilter,
 		audioContext:audioContext,
 		setAnalyseMusic:setAnalyseMusic,
-		version : '0.934(2048)'
+		version : '0.935(2048)'
 	};
 
 };

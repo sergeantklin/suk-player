@@ -133,8 +133,9 @@ function Recorder(_initParams){
       stream = _stream;
         if(_options.video){
           var video = document.querySelector('#capturingVideo');
-          video.volume=0;
-          video.src = window.URL.createObjectURL(stream);
+					video.volume=0;
+					video.srcObject = stream
+          //video.src = window.URL.createObjectURL(stream);
         }
       sourceNode = audioContext.createMediaStreamSource(stream);
       buildAudioGraph();
