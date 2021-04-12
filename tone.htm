@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <button id="start-stop">start</button>
+        <button id="up">up</button>
+        <button id="down">down</button>
+<!--        <script src="https://unpkg.com/tone@13.8.25/build/Tone.js"></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+<!--        <script src="./js/Tone.js"></script>-->
+        <script>
+            const $startStopButton = document.getElementById('start-stop');
+            const $upButton = document.getElementById('up');
+            const $downButton = document.getElementById('down');
+
+            const pitchShift = new Tone.PitchShift().toDestination();
+            const player = new Tone.Player("./15640.mp3").connect(pitchShift);
+            player.loop = true;
+
+             Tone.loaded().then(() => {
+                 //player.start();
+                 $startStopButton.onclick = () => {
+                     player.start();
+                 }
+             });
+
+            // pitchShift.windowSize = 0.03;
+
+            $upButton.onclick = () => pitchShift.pitch += 1;
+            $downButton.onclick = () => pitchShift.pitch -= 1;
+
+        </script>
+    </body>
+</html>
