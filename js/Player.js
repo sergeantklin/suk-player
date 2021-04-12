@@ -296,6 +296,7 @@
     */
   }
   function setTone(_newPitch, supress) {
+    return;
     if (useHtmlPlayer) {
       return;
     }
@@ -349,6 +350,7 @@
     }
   }
   function setSpeed(_value, supress) {
+    return;
     if (!supress) {
       logging && console.log("YOU CHOOSE SET SPEED");
     }
@@ -509,6 +511,8 @@
     preload: preload,
     play: setPlay,
     setPosition: setPosition,
+    setTone: setTone,
+    setSpeed: setSpeed,
     setVolume: setVolume,
     pause: setPause,
     startRecord: startRecord,
@@ -530,6 +534,6 @@
     setRecordFilter: setRecordFilter,
     audioContext: audioContext,
     setAnalyseMusic: setAnalyseMusic,
-    version: "2.beta(2048)",
+    version: "2.beta.1(2048)",
   };
 }
