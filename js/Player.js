@@ -163,8 +163,9 @@
     filters[filters.length - 1].connect(audioContext.destination);
   }
   function onPlay() {
-    var _position = getCurrentTime() / getDuration();
-    if (_position > 1) {
+    var _position = getCurrentTime();
+    var duration = getDuration();
+    if (_position > duration) {
       pause(true);
       clearInterval(playInterval);
       pausedAt = 0;
@@ -172,7 +173,7 @@
       playing = false;
       initParams.onEnd && initParams.onEnd();
     } else {
-      initParams.onTimeUpdate && initParams.onTimeUpdate(_position);
+      initParams.onTimeUpdate && initParams.onTimeUpdate(_position / 1000);
     }
   }
 
@@ -534,6 +535,6 @@
     setRecordFilter: setRecordFilter,
     audioContext: audioContext,
     setAnalyseMusic: setAnalyseMusic,
-    version: "2.beta.1(2048)",
+    version: "2.beta.2(2048)",
   };
 }
