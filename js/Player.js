@@ -173,7 +173,7 @@
       playing = false;
       initParams.onEnd && initParams.onEnd();
     } else {
-      initParams.onTimeUpdate && initParams.onTimeUpdate(_position / 1000);
+      initParams.onTimeUpdate && initParams.onTimeUpdate(_position);
     }
   }
 
@@ -535,6 +535,6 @@
     setRecordFilter: setRecordFilter,
     audioContext: audioContext,
     setAnalyseMusic: setAnalyseMusic,
-    version: "2.beta.2(2048)",
+    version: "2.beta.3(2048)",
   };
 }
